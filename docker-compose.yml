@@ -5,8 +5,8 @@ services:
     build: ./services/auth-service
     ports:
       - "3001:3001"
-    environment:
-      - MONGO_URI=mongodb://mongodb:27017/auth
+    env_file:
+      - .env
     depends_on:
       - mongodb
     restart: always
@@ -17,8 +17,8 @@ services:
     build: ./services/order-service
     ports:
       - "3002:3002"
-    environment:
-      - MONGO_URI=mongodb://mongodb:27017/orders
+    env_file:
+      - .env
     depends_on:
       - mongodb
     restart: always
@@ -29,8 +29,8 @@ services:
     build: ./services/product-service
     ports:
       - "3003:3003"
-    environment:
-      - MONGO_URI=mongodb://mongodb:27017/products
+    env_file:
+      - .env
     depends_on:
       - mongodb
     restart: always
@@ -49,6 +49,8 @@ services:
     build: ./frontend
     ports:
       - "8080:80"
+    env_file:
+      - .env
     depends_on:
       - auth-service
       - order-service
