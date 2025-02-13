@@ -1,0 +1,65 @@
+version: "3.8"
+
+services:
+  auth-service:
+    build: ./services/auth-service
+    ports:
+      - "3001:3001"
+    environment:
+      - MONGO_URI=mongodb://mongodb:27017/auth
+    depends_on:
+      - mongodb
+    restart: always
+    networks:
+      - app-network
+
+  order-service:
+    build: ./services/order-service
+    ports:
+      - "3002:3002"
+    environment:
+      - MONGO_URI=mongodb://mongodb:27017/orders
+    depends_on:
+      - mongodb
+    restart: always
+    networks:
+      - app-network
+
+  product-service:
+    build: ./services/product-service
+    ports:
+      - "3003:3003"
+    environment:
+      - MONGO_URI=mongodb://mongodb:27017/products
+    depends_on:
+      - mongodb
+    restart: always
+    networks:
+      - app-network
+
+  mongodb:
+    image: mongo:4.4
+    volumes:
+      - mongo-data:/data/db
+    restart: always
+    networks:
+      - app-network
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      - auth-service
+      - order-service
+      - product-service
+    restart: always
+    networks:
+      - app-network
+
+volumes:
+  mongo-data:
+
+networks:
+  app-network:
+    driver: bridge
