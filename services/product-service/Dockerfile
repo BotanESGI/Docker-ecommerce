@@ -1,16 +1,25 @@
-# 1 : Construction
-FROM node:18-alpine AS build
+# Étape de base commune
+FROM node:18-alpine AS base
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 WORKDIR /app
-
-# Copier et Installer les dépendances
 COPY package*.json ./
-RUN npm install --production
 
-# Copier le code source
+# Étape de développement
+FROM base AS development
+RUN npm install && npm cache clean --force \
+    && chown -R appuser:appgroup /app
 COPY . .
-
-# Exposer le port 3000 (mentionné dans app.js)
+USER appuser
+ENV NODE_ENV=development
 EXPOSE 3000
+CMD ["npm", "run", "dev"]
 
-# Démarrer l'application
+# Étape de production
+FROM base AS production
+RUN npm install --only=production && npm cache clean --force \
+    && chown -R appuser:appgroup /app
+COPY . .
+USER appuser
+ENV NODE_ENV=production
+EXPOSE 3000
 CMD ["npm", "start"]
