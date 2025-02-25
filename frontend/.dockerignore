@@ -1,0 +1,14 @@
+# Répertoires à ignorer
+.vscode
+node_modules
+public
+test-results
+tests
+.env
+.env.production
+.eslintrc.cjs
+.gitignore
+.npmrc
+build-front.yml
+Dockerfile
+README.md
