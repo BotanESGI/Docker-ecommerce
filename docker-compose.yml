@@ -17,6 +17,11 @@ services:
     restart: always
     networks:
       - app-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   order-service:
     build:
@@ -31,6 +36,11 @@ services:
     restart: always
     networks:
       - app-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3002/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   product-service:
     build:
@@ -45,9 +55,14 @@ services:
     restart: always
     networks:
       - app-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   mongodb:
-    image: mongo:4.4
+    image: mongo:latest
     volumes:
       - mongo-data:/data/db
     ports:
@@ -55,6 +70,11 @@ services:
     restart: always
     networks:
       - app-network
+    healthcheck:
+      test: ["CMD", "mongo", "--eval", "db.runCommand({ ping: 1 })"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   frontend:
     build:
