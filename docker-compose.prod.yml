@@ -1,0 +1,58 @@
+version: "3.8"
+
+services:
+  order-service:
+    image: docker-ecommerce-order-service:latest
+    restart: always
+    networks:
+      - app-network
+    depends_on:
+      - mongodb
+    env_file:
+      - .env.production
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3002/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  product-service:
+    image: docker-ecommerce-product-service:latest
+    restart: always
+    networks:
+      - app-network
+    depends_on:
+      - mongodb
+    env_file:
+      - .env.production
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  mongodb:
+    image: mongo:latest
+    restart: always
+    networks:
+      - app-network
+    volumes:
+      - mongo-data:/data/db
+
+  frontend:
+    image: docker-ecommerce-frontend:latest
+    restart: always
+    networks:
+      - app-network
+    depends_on:
+      - order-service
+      - product-service
+    ports:
+      - "8080:80"
+
+volumes:
+  mongo-data:
+
+networks:
+  app-network:
+    driver: bridge
