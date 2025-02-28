@@ -43,6 +43,7 @@ services:
       - .env.development
     depends_on:
       - mongodb
+      - product-service
     restart: always
     networks:
       - app-network
