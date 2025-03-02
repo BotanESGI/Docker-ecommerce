@@ -90,8 +90,8 @@ docker-compose -f docker-compose.prod.yml up --build -d
 | `--build` | Reconstruit les images Docker avant de démarrer les services, garantissant que les dernières modifications du code ou de la configuration sont prises en compte. |
 ---
 
-## 🔍 Test des Services
-Utilisez les commandes suivantes pour tester les services :
+## 🔍 Test du projet
+Utilisez les commandes suivantes pour tester le projet :
 
 ```sh
 # Tester la santé du service d'authentification
@@ -105,6 +105,30 @@ curl http://localhost:3000/api/health
 
 # Tester la connexion à MongoDB
 docker exec -it docker-ecommerce-mongodb-1 mongosh --eval "db.runCommand({ ping: 1 })"
+
+# Tester tout le projet
+./scripts/run-tests.sh
+
+# Test des images avec Trivy
+# Installer Trivy
+docker pull aquasec/trivy
+# Scanner l'image de auth-service
+docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image auth-service:latest
+# Scanner l'image de order-service
+docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image order-service:latest
+# Scanner l'image de product-service
+docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image product-service:latest
+# Scanner l'image de mongodb
+docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image mongo:latest
+# Scanner l'image de frontend
+docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image frontend:latest
+
+
+trivy fs . 
+trivy image docker-ecommerce-auth-service:latest
+trivy image docker-ecommerce-product-service:latest
+trivy image docker-ecommerce-order-service:latest
+trivy image docker-ecommerce-frontend:latest
 
 ```
 
